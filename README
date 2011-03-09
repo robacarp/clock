@@ -1,0 +1,3 @@
+Coding for the clock.
+
+Includes a custom class for the max7219 chip for practice with c classes, binary, and bit banging.
