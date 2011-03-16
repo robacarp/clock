@@ -11,6 +11,7 @@ Max7219::Max7219(int data, int clock, int latch){
 }
 
 void Max7219::boot(){
+
   pinMode(_data, OUTPUT);
   pinMode(_clock, OUTPUT);
   pinMode(_latch, OUTPUT);
@@ -19,8 +20,9 @@ void Max7219::boot(){
   test(false);
   intensity(0xf);
   decode(false);
-  scan_limit(7);
+  scan_limit(4);
 
+  set_display( 0 );
 
 }
 
@@ -58,19 +60,26 @@ void Max7219::set_register(byte address, byte data){
   unsigned int word = address;
   word = word << 8;
   word = word | data;
-  Serial.print("set register: ");
-  Serial.print(address,BIN);
-  Serial.print(" ");
-  Serial.println(data,BIN);
+  //Serial.print("set register: ");
+  //Serial.print(address,BIN);
+  //Serial.print(" ");
+  //Serial.println(data,BIN);
 
   send_word(word);
 }
 
-void Max7219::test(bool on)              { set_register(0x0f,on);          }
-void Max7219::decode(bool on)            { set_register(0x09, on);         }
-void Max7219::intensity(byte brightness) { set_register(0x0a, brightness); }
-void Max7219::shutdown(bool enabled)     { set_register(0x0c, !enabled);   }
-void Max7219::scan_limit(byte count)     { set_register(0x0b, count);      }
+void Max7219::test       ( bool on         ) { set_register(0x0f, on         ); }
+void Max7219::decode     ( bool on         ) { set_register(0x09, on         ); }
+void Max7219::intensity  ( byte brightness ) { set_register(0x0a, brightness ); }
+void Max7219::shutdown   ( bool enabled    ) { set_register(0x0c, !enabled   ); }
+void Max7219::scan_limit ( byte count      ) { set_register(0x0b, count      ); }
+
+void Max7219::set_display( byte state ){
+
+  for (int i=0; i<9; i++)
+    set_register(i,state);
+
+}
 
 //TODO: this isn't really correct when used with a common anode 7seg.
 void Max7219::digit(int digit, int value){
@@ -91,8 +100,6 @@ void Max7219::digit(int digit, int value){
   set_register(digit, data);
 }
 
+void Max7219::bar(int digit, int value){ set_register(digit, value); }
 
-
-
-  
 #endif
